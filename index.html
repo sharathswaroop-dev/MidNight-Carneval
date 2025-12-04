@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mid Night Carneval</title>
+  <meta name="description" content="Mid Night Carneval — events, pubs, timings and join flow (demo)"/>
+
+  <style>
+    :root{
+      --bg:#050405;
+      --card:#0f0f12;
+      --accent:#ff3b3b;
+      --muted:#bdbdbd;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+      background:linear-gradient(180deg,#050405 0%, #0a0a0a 100%);
+      color:#fff; -webkit-font-smoothing:antialiased;
+      padding-bottom:60px;
+    }
+    header{position:sticky; top:0; background:rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px); padding:12px 18px; border-bottom:1px solid rgba(255,0,0,0.06);
+      display:flex; gap:12px; align-items:center; z-index:40;
+    }
+    h1{margin:0; font-size:20px; color:var(--accent)}
+    .container{max-width:1000px; margin:18px auto; padding:0 16px;}
+    .lead{color:var(--muted); margin:8px 0 18px;}
+    .grid{display:grid; grid-template-columns:1fr 360px; gap:18px;}
+    .card{background:var(--card); border-radius:12px; padding:14px; box-shadow:0 6px 20px rgba(0,0,0,0.6);}
+    .small{font-size:13px; color:var(--muted)}
+    table{width:100%; border-collapse:collapse; margin-top:8px;}
+    th,td{padding:8px 6px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.03); font-size:14px;}
+    th{color:var(--muted); font-weight:600; font-size:13px}
+    .btn{display:inline-block; background:var(--accent); color:#fff; padding:8px 10px;border-radius:8px;text-decoration:none;font-weight:600;cursor:pointer;}
+    .filter-row{display:flex; gap:8px; align-items:center; margin-bottom:10px; flex-wrap:wrap;}
+    .select, input[type="text"]{background:var(--glass); border:1px solid rgba(255,0,0,0.06); padding:8px 10px; color:#fff; border-radius:8px;}
+    .pub-list{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .pub{padding:8px 10px; background:rgba(255,255,255,0.02); border-radius:8px; cursor:pointer; color:var(--muted); font-size:13px}
+    .pub.active{border:1px solid rgba(255,59,59,0.18); color:#fff; box-shadow:0 6px 20px rgba(255,59,59,0.04)}
+    .suggest{background:linear-gradient(90deg,#3bffb0,#3bb7ff); color:#000; padding:6px 8px; border-radius:8px; font-weight:700}
+    .joined{background:transparent; color:#a6ffa6; font-weight:700; border:1px dashed rgba(166,255,166,0.08); padding:4px 6px;border-radius:6px;}
+    footer{margin-top:24px; text-align:center; color:var(--muted); font-size:13px; padding:20px 10px;}
+    @media(max-width:980px){ .grid{grid-template-columns:1fr; } .card.sidebar{order:-1} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mid Night Carneval</h1>
+    <div style="flex:1"></div>
+    <nav style="display:flex; gap:8px; align-items:center">
+      <a class="btn" id="organizer-btn">Organizer / Join Event</a>
+      <a class="btn" id="clear-join" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Clear Local</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <p class="lead">Demo project (frontend-only) for GitHub Pages. Use the Organizer button to enter password and join events as a <strong>Club Team</strong>.</p>
+
+    <div class="grid">
+      <!-- left column: events -->
+      <div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>Upcoming Events</strong>
+              <div class="small">Filter by pub or search event name</div>
+            </div>
+            <div>
+              <select id="sort" class="select">
+                <option value="date">Sort: Date</option>
+                <option value="price">Sort: Price</option>
+                <option value="pop">Sort: Popular</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-row" style="margin-top:12px;">
+            <input id="search" type="text" placeholder="Search events..." style="min-width:180px" />
+            <div style="flex:1"></div>
+            <div class="small">Repo: <code>MidNight-Carneval</code></div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <div class="small">Pubs</div>
+            <div class="pub-list" id="pub-list"></div>
+          </div>
+
+          <table id="events-table" style="margin-top:12px;">
+            <thead>
+              <tr><th>Event</th><th>Pub</th><th>Date</th><th>Time</th><th>Cost/person</th><th></th></tr>
+            </thead>
+            <tbody id="events-body"></tbody>
+          </table>
+        </div>
+
+        <!-- info / instructions -->
+        <div class="card" style="margin-top:12px;">
+          <strong>How to use (demo)</strong>
+          <ul class="small">
+            <li>Click <em>Organizer / Join Event</em> → enter password to enable joining.</li>
+            <li>Joining creates a local record that you are part of the event as a <strong>Club Team</strong>.</li>
+            <li>All data is stored locally (no server). For multi-user persistence use a backend (I can add Express / Firebase).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- right column: sidebar -->
+      <aside class="card sidebar">
+        <strong>Project Info</strong>
+        <div class="small" style="margin-top:6px">
+          <div><strong>Project name:</strong> Mid Night Carneval</div>
+          <div><strong>Repo name:</strong> MidNight-Carneval</div>
+          <div style="margin-top:8px"><strong>Demo Password:</strong> <code id="pwd-display">Carn3valPass2025!</code></div>
+          <div class="small" style="margin-top:6px;color:var(--muted)">(Change the password by editing <code>PROJECT_PASSWORD</code> in the HTML)</div>
+        </div>
+
+        <hr style="border:none;height:12px">
+
+        <div style="margin-top:8px">
+          <strong>Suggested Featured Pubs</strong>
+          <div class="pub-list" style="margin-top:8px; gap:6px;">
+            <div class="pub">The Griffin Pub</div>
+            <div class="pub">The Lantern House</div>
+            <div class="pub">Old Town Cellars</div>
+            <div class="pub">Starlight Taproom</div>
+            <div class="pub">Rooftop Rendezvous</div>
+          </div>
+        </div>
+
+        <hr style="border:none;height:12px">
+
+        <div style="margin-top:8px">
+          <strong>My Joined Events</strong>
+          <div id="joined-list" style="margin-top:8px"></div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="small">Made for demo / student project. Need server persistence? Ask and I’ll produce backend code.</div>
+    </footer>
+  </main>
+
+  <script>
+  /**********************
+   * CONFIG / DATA
+   **********************/
+  // Demo password (change before publishing if you want)
+  const PROJECT_PASSWORD = 'Carn3valPass2025!';
+
+  // pubs (sample)
+  const PUBS = [
+    'The Griffin Pub',
+    'The Lantern House',
+    'Old Town Cellars',
+    'Starlight Taproom',
+    'Rooftop Rendezvous'
+  ];
+
+  // sample events - you can edit/add more
+  const EVENTS = [
+    { id:'e1', pub:'The Griffin Pub', name:'Neon Night', date:'2025-12-20', time:'22:00 - 02:00', cost:799, capacity:120, joined:0 },
+    { id:'e2', pub:'The Lantern House', name:'Lantern Beats', date:'2025-12-24', time:'21:00 - 00:30', cost:999, capacity:80, joined:0 },
+    { id:'e3', pub:'Old Town Cellars', name:'Vintage Vibes', date:'2026-01-05', time:'19:00 - 23:00', cost:1299, capacity:60, joined:0 },
+    { id:'e4', pub:'Starlight Taproom', name:'Starlight Sessions', date:'2025-12-31', time:'23:00 - 03:00', cost:1499, capacity:200, joined:0 },
+    { id:'e5', pub:'Rooftop Rendezvous', name:'Sunset DJ Set', date:'2025-12-18', time:'18:30 - 22:30', cost:699, capacity:40, joined:0 }
+  ];
+
+  // localStorage keys
+  const LS_JOINED = 'midnight_carneval_joined_v1';
+  const LS_SETTINGS = 'midnight_carneval_settings_v1';
+
+  /**********************
+   * UTILITIES
+   **********************/
+  function $(s){ return document.querySelector(s) }
+  function $all(s){ return Array.from(document.querySelectorAll(s)) }
+
+  function loadJoined(){
+    try{ return JSON.parse(localStorage.getItem(LS_JOINED) || '{}'); } catch(e){ return {} }
+  }
+  function saveJoined(obj){ localStorage.setItem(LS_JOINED, JSON.stringify(obj)); }
+
+  function loadSettings(){ try{ return JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}'); } catch(e){ return {} } }
+  function saveSettings(s){ localStorage.setItem(LS_SETTINGS, JSON.stringify(s)); }
+
+  /**********************
+   * RENDER LOGIC
+   **********************/
+  function renderPubs(selectedPub){
+    const el = $('#pub-list');
+    el.innerHTML = '';
+    const allBtn = document.createElement('div'); allBtn.className='pub' + (selectedPub === null ? ' active' : ''); allBtn.innerText='All'; 
+    allBtn.onclick = ()=> { renderEvents(null); setActivePub(null); }
+    el.appendChild(allBtn);
+
+    PUBS.forEach(p => {
+      const d = document.createElement('div');
+      d.className = 'pub' + (p === selectedPub ? ' active' : '');
+      d.innerText = p;
+      d.onclick = ()=> { renderEvents(p); setActivePub(p); }
+      el.appendChild(d);
+    });
+  }
+
+  function setActivePub(p){
+    $all('.pub').forEach(node => node.classList.toggle('active', node.innerText === (p || 'All')));
+  }
+
+  function renderEvents(filterPub = null){
+    const body = $('#events-body');
+    body.innerHTML = '';
+    const search = $('#search').value.trim().toLowerCase();
+    const sort = $('#sort').value;
+
+    // merge EVENTS with joined counts from local
+    const joined = loadJoined();
+    const evs = EVENTS.map(ev => {
+      const j = joined[ev.id] || {team:'', count:0};
+      return {...ev, joinedCount: j.count || 0};
+    });
+
+    let list = evs.filter(ev => (filterPub ? ev.pub === filterPub : true))
+                 .filter(ev => (search ? (ev.name.toLowerCase().includes(search) || ev.pub.toLowerCase().includes(search)) : true));
+
+    if (sort === 'date') {
+      list.sort((a,b)=> new Date(a.date) - new Date(b.date));
+    } else if (sort === 'price') {
+      list.sort((a,b)=> a.cost - b.cost);
+    } else if (sort === 'pop') {
+      list.sort((a,b)=> b.joinedCount - a.joinedCount);
+    }
+
+    if (list.length === 0) {
+      body.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">No events found.</td></tr>';
+      return;
+    }
+
+    list.forEach(ev=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${ev.name}</td>
+        <td>${ev.pub}</td>
+        <td>${ev.date}</td>
+        <td>${ev.time}</td>
+        <td>₹${ev.cost}</td>
+        <td style="text-align:right">
+          ${ ev.joinedCount > 0 ? '<span class="joined">'+ev.joinedCount+' joined</span>' : '' }
+          &nbsp;
+          <button class="btn" data-eid="${ev.id}">Join (Club Team)</button>
+        </td>
+      `;
+      body.appendChild(tr);
+    });
+
+    // add listeners to join buttons
+    $all('button.btn[data-eid]').forEach(btn=>{
+      btn.onclick = ()=> handleJoin(btn.dataset.eid);
+    });
+  }
+
+  function renderJoinedList(){
+    const container = $('#joined-list');
+    const joined = loadJoined();
+    container.innerHTML = '';
+    const keys = Object.keys(joined);
+    if (keys.length === 0) {
+      container.innerHTML = '<div class="small" style="color:var(--muted)">No joined events yet.</div>';
+      return;
+    }
+    keys.forEach(k=>{
+      const item = joined[k];
+      const ev = EVENTS.find(e=>e.id===k);
+      const div = document.createElement('div');
+      div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong style="color:#fff">${ev.name}</strong><div class="small">${ev.pub} • ${ev.date} • ${item.team}</div></div><div><button class="btn" data-eid="${k}" style="background:transparent;border:1px solid rgba(255,255,255,0.04)">Leave</button></div></div>`;
+      container.appendChild(div);
+    });
+    // add leave handlers
+    $all('#joined-list button[data-eid]').forEach(b=>{
+      b.onclick = ()=> {
+        const joined = loadJoined();
+        delete joined[b.dataset.eid];
+        saveJoined(joined);
+        renderEvents();
+        renderJoinedList();
+      };
+    });
+  }
+
+  /**********************
+   * JOIN FLOW (password-protected)
+   **********************/
+  function organizerFlow(){
+    const pw = prompt('Organizer / Join Event — enter password:');
+    if (pw === null) return;
+    if (pw === PROJECT_PASSWORD) {
+      alert('Password OK — you can now join events (as Club Team).');
+      saveSettings({authorized:true});
+    } else {
+      alert('Wrong password.');
+      saveSettings({authorized:false});
+    }
+    renderEvents();
+    renderJoinedList();
+  }
+
+  function isAuthorized(){
+    const s = loadSettings();
+    return s && s.authorized === true;
+  }
+
+  function handleJoin(eid){
+    if (!isAuthorized()) {
+      const ok = confirm('Joining requires organizer password. Do you want to enter password now?');
+      if (!ok) return;
+      organizerFlow();
+      if (!isAuthorized()) return;
+    }
+
+    // For this demo we auto-set team to "Club Team"
+    const joined = loadJoined();
+    if (joined[eid]) { alert('You already joined this event as a Club Team.'); return; }
+    joined[eid] = { team: 'Club Team', count: 1, joinedAt: new Date().toISOString() };
+    saveJoined(joined);
+    alert('Joined! You are registered as Club Team for this event.');
+    renderEvents();
+    renderJoinedList();
+  }
+
+  /**********************
+   * INITIALIZE UI
+   **********************/
+  document.addEventListener('DOMContentLoaded', ()=>{
+    $('#pwd-display').innerText = PROJECT_PASSWORD;
+    renderPubs(null);
+    renderEvents(null);
+    renderJoinedList();
+
+    $('#organizer-btn').onclick = organizerFlow;
+    $('#clear-join').onclick = ()=>{
+      if (confirm('Clear all local join data?')) {
+        localStorage.removeItem(LS_JOINED);
+        localStorage.removeItem(LS_SETTINGS);
+        renderEvents();
+        renderJoinedList();
+      }
+    };
+
+    $('#search').addEventListener('input', ()=> renderEvents());
+    $('#sort').addEventListener('change', ()=> renderEvents());
+  });
+  </script>
+</body>
+</html>
